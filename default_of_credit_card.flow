@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "version": 1,
+    "disable_limits": false
+  },
+  "nodes": [
+    {
+      "node_id": "b003230d-8877-46c7-b24f-2a77ca08be5d",
+      "type": "SOURCE",
+      "operator": "sagemaker.s3_source_0.1",
+      "parameters": {
+        "dataset_definition": {
+          "__typename": "S3CreateDatasetDefinitionOutput",
+          "datasetSourceType": "S3",
+          "name": "dataset.csv",
+          "description": null,
+          "s3ExecutionContext": {
+            "__typename": "S3ExecutionContext",
+            "s3Uri": "s3://sagemaker-us-west-2-114169298763/sagemaker-tutorial/data/dataset.csv",
+            "s3ContentType": "csv",
+            "s3HasHeader": true
+          }
+        }
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "default",
+          "sampling": {
+            "sampling_method": "sample_by_limit",
+            "limit_rows": 50000
+          }
+        }
+      ]
+    },
+    {
+      "node_id": "8ee8feb6-a0e3-4686-9e97-3a46d60ed752",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.infer_and_cast_type_0.1",
+      "parameters": {},
+      "trained_parameters": {
+        "schema": {
+          "ID": "long",
+          "LIMIT_BAL": "long",
+          "SEX": "long",
+          "EDUCATION": "long",
+          "MARRIAGE": "long",
+          "AGE": "long",
+          "PAY_0": "long",
+          "PAY_2": "long",
+          "PAY_3": "long",
+          "PAY_4": "long",
+          "PAY_5": "long",
+          "PAY_6": "long",
+          "BILL_AMT1": "long",
+          "BILL_AMT2": "long",
+          "BILL_AMT3": "long",
+          "BILL_AMT4": "long",
+          "BILL_AMT5": "long",
+          "BILL_AMT6": "long",
+          "PAY_AMT1": "long",
+          "PAY_AMT2": "long",
+          "PAY_AMT3": "long",
+          "PAY_AMT4": "long",
+          "PAY_AMT5": "long",
+          "PAY_AMT6": "long",
+          "default payment next month": "long"
+        }
+      },
+      "inputs": [
+        {
+          "name": "default",
+          "node_id": "b003230d-8877-46c7-b24f-2a77ca08be5d",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "5ca00bde-9323-422a-bbde-0220f03a7258",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Drop column",
+        "drop_column_parameters": {
+          "column_to_drop": "ID"
+        }
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "8ee8feb6-a0e3-4686-9e97-3a46d60ed752",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "1bbed8c0-17f1-4b2e-a878-c8d5d81bb815",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Rename column",
+        "rename_column_parameters": {
+          "input_column": "default payment next month",
+          "new_name": "LABEL"
+        },
+        "drop_column_parameters": {}
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "5ca00bde-9323-422a-bbde-0220f03a7258",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    {
+      "node_id": "84af5e63-1e03-43bc-b66b-80f3a6a49488",
+      "type": "TRANSFORM",
+      "operator": "sagemaker.spark.manage_columns_0.1",
+      "parameters": {
+        "operator": "Move column",
+        "move_column_parameters": {
+          "move_type": "Move to start",
+          "move_to_start_parameters": {
+            "column_to_move": "LABEL"
+          }
+        },
+        "drop_column_parameters": {}
+      },
+      "inputs": [
+        {
+          "name": "df",
+          "node_id": "1bbed8c0-17f1-4b2e-a878-c8d5d81bb815",
+          "output_name": "default"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "default"
+        }
+      ]
+    }
+  ]
+}
